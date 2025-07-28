@@ -1,0 +1,103 @@
+﻿<Window x:Class="FolderRemark.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FolderRemark"
+        mc:Ignorable="d"
+        Title="文件夹备注工具" Height="600" Width="900">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- 顶部路径选择区域 -->
+        <Border Grid.Row="0" Background="#F0F0F0" Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <Label Grid.Column="0" Content="选择路径:" VerticalAlignment="Center" FontWeight="Bold"/>
+                <TextBox Grid.Column="1" x:Name="PathTextBox" Margin="10,0" VerticalAlignment="Center" IsReadOnly="True"/>
+                <Button Grid.Column="2" x:Name="BrowseButton" Content="浏览..." Width="80" Height="30" Click="BrowseButton_Click"/>
+            </Grid>
+        </Border>
+        
+        <!-- 主要内容区域 -->
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- 左侧文件夹列表 -->
+            <Border Grid.Column="0" BorderBrush="#CCCCCC" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Border Grid.Row="0" Background="#E8E8E8" Padding="10">
+                        <TextBlock Text="文件夹列表" FontWeight="Bold" FontSize="14"/>
+                    </Border>
+                    
+                    <ListBox Grid.Row="1" x:Name="FolderListBox" SelectionChanged="FolderListBox_SelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="5">
+                                    <TextBlock Text="📁" FontSize="16" Margin="0,0,5,0"/>
+                                    <TextBlock Text="{Binding Name}" FontSize="12"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+            
+            <!-- 分隔线 -->
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="#CCCCCC"/>
+            
+            <!-- 右侧备注区域 -->
+            <Border Grid.Column="2" BorderBrush="#CCCCCC" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Border Grid.Row="0" Background="#E8E8E8" Padding="10">
+                        <StackPanel>
+                            <TextBlock x:Name="SelectedFolderLabel" Text="请选择一个文件夹" FontWeight="Bold" FontSize="14"/>
+                            <TextBlock x:Name="FolderPathLabel" Text="" FontSize="10" Foreground="Gray" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <ScrollViewer Grid.Row="1" Margin="10">
+                        <StackPanel>
+                            <Label Content="备注内容:" FontWeight="Bold"/>
+                            <TextBox x:Name="RemarkTextBox" Height="200" TextWrapping="Wrap" AcceptsReturn="True" 
+                                   VerticalScrollBarVisibility="Auto" Margin="0,5,0,10"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+        
+        <!-- 底部按钮区域 -->
+        <Border Grid.Row="2" Background="#F0F0F0" Padding="10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="SaveButton" Content="保存备注" Width="100" Height="35" 
+                       Margin="0,0,10,0" Click="SaveButton_Click" IsEnabled="False"/>
+                <Button x:Name="RefreshButton" Content="刷新" Width="80" Height="35" 
+                       Click="RefreshButton_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
