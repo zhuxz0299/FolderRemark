@@ -6,16 +6,16 @@
         xmlns:local="clr-namespace:FolderRemark"
         mc:Ignorable="d"
         Title="文件夹备注工具" Height="700" Width="1000"
-        Background="#F8F9FA" WindowStartupLocation="CenterScreen">
+        Background="{DynamicResource WindowBackgroundBrush}" WindowStartupLocation="CenterScreen">
     
     <Window.Resources>
         <!-- 现代化按钮样式 -->
         <Style x:Key="ModernButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#007ACC"/>
+            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontWeight" Value="Medium"/>
-            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontSize" Value="{DynamicResource AppFontSize}"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -27,7 +27,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#005A9E"/>
+                                <Setter Property="Background" Value="{DynamicResource PrimaryHoverBrush}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter Property="Background" Value="#004578"/>
@@ -44,7 +44,7 @@
 
         <!-- 保存成功按钮样式 -->
         <Style x:Key="SaveSuccessButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
-            <Setter Property="Background" Value="#28A745"/>
+            <Setter Property="Background" Value="{DynamicResource SuccessBrush}"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#218838"/>
@@ -54,11 +54,11 @@
 
         <!-- 次要按钮样式 -->
         <Style x:Key="SecondaryButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#6C757D"/>
+            <Setter Property="Background" Value="{DynamicResource SecondaryBrush}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontWeight" Value="Medium"/>
-            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontSize" Value="{DynamicResource AppFontSize}"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -83,11 +83,12 @@
 
         <!-- 现代化文本框样式 -->
         <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="BorderBrush" Value="#DEE2E6"/>
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="12,8"/>
-            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontSize" Value="{DynamicResource AppFontSize}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
@@ -101,7 +102,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsFocused" Value="True">
-                                <Setter Property="BorderBrush" Value="#007ACC"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
                                 <Setter Property="BorderThickness" Value="2"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -115,8 +116,8 @@
 
         <!-- 现代化 ListBox 样式 -->
         <Style x:Key="ModernListBoxStyle" TargetType="ListBox">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="BorderBrush" Value="#DEE2E6"/>
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -169,7 +170,7 @@
         </Grid.RowDefinitions>
         
         <!-- 顶部路径选择区域 -->
-        <Border Grid.Row="0" Background="White" Padding="20" Margin="0,0,0,10">
+        <Border Grid.Row="0" Background="{DynamicResource CardBackgroundBrush}" Padding="20" Margin="0,0,0,10">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="10" ShadowDepth="0" Color="#E0E0E0" Opacity="0.5"/>
             </Border.Effect>
@@ -178,14 +179,18 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 
                 <TextBlock Grid.Column="0" Text="📁 选择路径:" VerticalAlignment="Center" 
-                          FontWeight="SemiBold" FontSize="14" Foreground="#495057" Margin="0,0,15,0"/>
+                          FontWeight="SemiBold" FontSize="{DynamicResource AppFontSize}" 
+                          Foreground="{DynamicResource TextBrush}" Margin="0,0,15,0"/>
                 <TextBox Grid.Column="1" x:Name="PathTextBox" Margin="0,0,15,0" VerticalAlignment="Center" 
                         IsReadOnly="True" Style="{StaticResource ModernTextBoxStyle}" Height="40"/>
                 <Button Grid.Column="2" x:Name="BrowseButton" Content="浏览文件夹" Width="120" Height="40" 
-                       Click="BrowseButton_Click" Style="{StaticResource ModernButtonStyle}"/>
+                       Click="BrowseButton_Click" Style="{StaticResource ModernButtonStyle}" Margin="0,0,10,0"/>
+                <Button Grid.Column="3" x:Name="SettingsButton" Content="⚙️ 设置" Width="80" Height="40" 
+                       Click="SettingsButton_Click" Style="{StaticResource SecondaryButtonStyle}"/>
             </Grid>
         </Border>
         
@@ -198,7 +203,7 @@
             </Grid.ColumnDefinitions>
             
             <!-- 左侧文件夹列表 -->
-            <Border Grid.Column="0" Background="White" CornerRadius="12" Padding="0">
+            <Border Grid.Column="0" Background="{DynamicResource CardBackgroundBrush}" CornerRadius="12" Padding="0">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="15" ShadowDepth="0" Color="#E0E0E0" Opacity="0.3"/>
                 </Border.Effect>
@@ -208,8 +213,9 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <Border Grid.Row="0" Background="#007ACC" CornerRadius="12,12,0,0" Padding="20,15">
-                        <TextBlock Text="📂 文件夹列表" Foreground="White" FontWeight="SemiBold" FontSize="16"/>
+                    <Border Grid.Row="0" Background="{DynamicResource PrimaryBrush}" CornerRadius="12,12,0,0" Padding="20,15">
+                        <TextBlock Text="📂 文件夹列表" Foreground="White" FontWeight="SemiBold" 
+                                  FontSize="{DynamicResource AppFontSize}"/>
                     </Border>
                     
                     <ListBox Grid.Row="1" x:Name="FolderListBox" SelectionChanged="FolderListBox_SelectionChanged"
@@ -221,8 +227,8 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="📁" FontSize="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding Name}" FontSize="13" VerticalAlignment="Center" 
-                                              FontWeight="Medium" Foreground="#495057"/>
+                                    <TextBlock Text="{Binding Name}" FontSize="{DynamicResource AppFontSize}" VerticalAlignment="Center" 
+                                              FontWeight="Medium" Foreground="{DynamicResource TextBrush}"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -231,7 +237,7 @@
             </Border>
             
             <!-- 右侧备注区域 -->
-            <Border Grid.Column="2" Background="White" CornerRadius="12" Padding="0">
+            <Border Grid.Column="2" Background="{DynamicResource CardBackgroundBrush}" CornerRadius="12" Padding="0">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="15" ShadowDepth="0" Color="#E0E0E0" Opacity="0.3"/>
                 </Border.Effect>
@@ -241,10 +247,10 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <Border Grid.Row="0" Background="#28A745" CornerRadius="12,12,0,0" Padding="20,15">
+                    <Border Grid.Row="0" Background="{DynamicResource SuccessBrush}" CornerRadius="12,12,0,0" Padding="20,15">
                         <StackPanel>
                             <TextBlock x:Name="SelectedFolderLabel" Text="💡 请选择一个文件夹" 
-                                      Foreground="White" FontWeight="SemiBold" FontSize="16"/>
+                                      Foreground="White" FontWeight="SemiBold" FontSize="{DynamicResource AppFontSize}"/>
                             <TextBlock x:Name="FolderPathLabel" Text="" FontSize="11" 
                                       Foreground="#E8F5E8" Margin="0,4,0,0" TextTrimming="CharacterEllipsis"/>
                         </StackPanel>
@@ -257,12 +263,13 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         
-                        <TextBlock Grid.Row="0" Text="📝 备注内容:" FontWeight="SemiBold" FontSize="14" 
-                                  Foreground="#495057" Margin="0,0,0,10"/>
+                        <TextBlock Grid.Row="0" Text="📝 备注内容:" FontWeight="SemiBold" 
+                                  FontSize="{DynamicResource AppFontSize}" 
+                                  Foreground="{DynamicResource TextBrush}" Margin="0,0,0,10"/>
                         
                         <TextBox Grid.Row="1" x:Name="RemarkTextBox" TextWrapping="Wrap" AcceptsReturn="True" 
                                VerticalScrollBarVisibility="Auto" Style="{StaticResource ModernTextBoxStyle}"
-                               FontSize="13" Margin="0,0,0,20"/>
+                               FontSize="{DynamicResource AppFontSize}" Margin="0,0,0,20"/>
                         
                         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button x:Name="SaveButton" Content="💾 保存备注" Width="130" Height="42" 
@@ -277,9 +284,9 @@
         </Grid>
         
         <!-- 底部状态栏 -->
-        <Border Grid.Row="2" Background="#495057" Height="30">
+        <Border Grid.Row="2" Background="{DynamicResource StatusBarBrush}" Height="30">
             <TextBlock x:Name="StatusLabel" Text="就绪" Foreground="White" 
-                      VerticalAlignment="Center" Margin="20,0" FontSize="12"/>
+                      VerticalAlignment="Center" Margin="20,0" FontSize="{DynamicResource AppFontSize}"/>
         </Border>
     </Grid>
 </Window>

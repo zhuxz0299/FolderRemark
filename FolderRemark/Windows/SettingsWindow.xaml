@@ -1,0 +1,109 @@
+<Window x:Class="FolderRemark.Windows.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Settings" Height="500" Width="600"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="{DynamicResource PrimaryBrush}" Padding="20,15">
+            <TextBlock Text="Application Settings" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" Margin="20" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Border Style="{StaticResource SettingItemStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Appearance Settings" Style="{StaticResource SettingTitleStyle}"/>
+                        
+                        <StackPanel Margin="0,0,0,15">
+                            <TextBlock Text="Font Size:" FontWeight="Medium" Foreground="{DynamicResource TextBrush}" Margin="0,0,0,5"/>
+                            <TextBlock Text="Adjust application font size" Style="{StaticResource SettingDescriptionStyle}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Slider x:Name="FontSizeSlider" Width="200" Minimum="10" Maximum="20" 
+                                       Value="{Binding FontSize}" TickFrequency="1" IsSnapToTickEnabled="True"
+                                       ValueChanged="FontSizeSlider_ValueChanged"/>
+                                <TextBlock Text="{Binding ElementName=FontSizeSlider, Path=Value}" 
+                                          Margin="10,0,0,0" VerticalAlignment="Center"
+                                          Foreground="{DynamicResource TextBrush}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel>
+                            <TextBlock Text="Theme Mode:" FontWeight="Medium" Foreground="{DynamicResource TextBrush}" Margin="0,0,0,5"/>
+                            <TextBlock Text="Select application theme mode" Style="{StaticResource SettingDescriptionStyle}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton x:Name="LightThemeRadio" Content="Light" GroupName="Theme" 
+                                           Margin="0,0,20,0" Checked="ThemeRadio_Checked" Tag="Light"/>
+                                <RadioButton x:Name="DarkThemeRadio" Content="Dark" GroupName="Theme" 
+                                           Margin="0,0,20,0" Checked="ThemeRadio_Checked" Tag="Dark"/>
+                                <RadioButton x:Name="SystemThemeRadio" Content="Follow System" GroupName="Theme" 
+                                           Checked="ThemeRadio_Checked" Tag="System"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource SettingItemStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Folder Settings" Style="{StaticResource SettingTitleStyle}"/>
+                        
+                        <StackPanel>
+                            <TextBlock Text="Default Monitor Path:" FontWeight="Medium" Foreground="{DynamicResource TextBrush}" Margin="0,0,0,5"/>
+                            <TextBlock Text="Set default folder path to monitor on startup" Style="{StaticResource SettingDescriptionStyle}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="DefaultPathTextBox" Grid.Column="0" 
+                                        Text="{Binding LastSelectedPath}" 
+                                        Background="{DynamicResource CardBackgroundBrush}"
+                                        BorderBrush="{DynamicResource BorderBrush}"
+                                        Foreground="{DynamicResource TextBrush}"
+                                        Padding="10" Height="35" VerticalAlignment="Center"/>
+                                <Button Grid.Column="1" x:Name="BrowsePathButton" Content="Browse..." 
+                                       Width="80" Height="35" Margin="10,0,0,0"
+                                       Style="{StaticResource SecondaryButtonStyle}"
+                                       Click="BrowsePathButton_Click"/>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource SettingItemStyle}">
+                    <StackPanel>
+                        <TextBlock Text="About" Style="{StaticResource SettingTitleStyle}"/>
+                        <TextBlock Text="Folder Remark Tool v1.0" FontWeight="Medium" Foreground="{DynamicResource TextBrush}"/>
+                        <TextBlock Text="A simple and easy-to-use folder remark management tool" Style="{StaticResource SettingDescriptionStyle}"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Row="2" Background="{DynamicResource CardBackgroundBrush}" 
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="20">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="ResetButton" Content="Reset Default" Width="100" Height="35" 
+                       Margin="0,0,10,0" Style="{StaticResource SecondaryButtonStyle}"
+                       Click="ResetButton_Click"/>
+                <Button x:Name="SaveButton" Content="Save" Width="80" Height="35" 
+                       Margin="0,0,10,0" Style="{StaticResource ModernButtonStyle}"
+                       Click="SaveButton_Click"/>
+                <Button x:Name="CancelButton" Content="Cancel" Width="80" Height="35" 
+                       Style="{StaticResource SecondaryButtonStyle}"
+                       Click="CancelButton_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

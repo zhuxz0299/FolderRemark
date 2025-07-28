@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using FolderRemark.Models;
 using FolderRemark.Services;
+using FolderRemark.Windows;
 using MessageBox = System.Windows.MessageBox;
 
 namespace FolderRemark
@@ -21,12 +22,19 @@ namespace FolderRemark
         private readonly ObservableCollection<FolderInfo> _folders;
         private readonly RemarkService _remarkService;
         private readonly FolderWatcher _folderWatcher;
+        private readonly SettingsService _settingsService;
         private FolderInfo _selectedFolder;
         private string _currentPath;
         private DispatcherTimer _saveSuccessTimer;
 
         public MainWindow()
         {
+            // 初始化设置服务
+            _settingsService = new SettingsService();
+            
+            // 应用保存的主题和字体设置
+            ApplySettings();
+            
             InitializeComponent();
             
             _folders = new ObservableCollection<FolderInfo>();
@@ -51,6 +59,35 @@ namespace FolderRemark
             
             // 设置初始状态
             UpdateStatus("就绪");
+            
+            // 如果有保存的路径，自动加载
+            LoadLastSelectedPath();
+        }
+
+        private void ApplySettings()
+        {
+            var settings = _settingsService?.Settings;
+            if (settings != null)
+            {
+                // 应用主题
+                ThemeManager.ApplyTheme(settings.Theme);
+                
+                // 设置字体大小
+                System.Windows.Application.Current.Resources["AppFontSize"] = settings.FontSize;
+            }
+        }
+
+        private void LoadLastSelectedPath()
+        {
+            var lastPath = _settingsService.Settings.LastSelectedPath;
+            if (!string.IsNullOrEmpty(lastPath) && Directory.Exists(lastPath))
+            {
+                _currentPath = lastPath;
+                PathTextBox.Text = _currentPath;
+                LoadFolders();
+                _folderWatcher.StartWatching(_currentPath);
+                UpdateStatus($"已自动加载上次路径: {Path.GetFileName(_currentPath)}");
+            }
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
@@ -59,17 +96,48 @@ namespace FolderRemark
             {
                 Description = "选择要监控的文件夹",
                 UseDescriptionForTitle = true,
-                ShowNewFolderButton = true
+                ShowNewFolderButton = true,
+                SelectedPath = _currentPath
             };
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 _currentPath = dialog.SelectedPath;
                 PathTextBox.Text = _currentPath;
+                
+                // 保存选择的路径
+                _settingsService.UpdateLastSelectedPath(_currentPath);
+                
                 UpdateStatus($"正在加载文件夹: {Path.GetFileName(_currentPath)}");
                 LoadFolders();
                 _folderWatcher.StartWatching(_currentPath);
                 UpdateStatus($"已加载 {_folders.Count} 个文件夹");
+            }
+        }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var settingsWindow = new Windows.SettingsWindow(_settingsService)
+            {
+                Owner = this
+            };
+
+            if (settingsWindow.ShowDialog() == true)
+            {
+                // 重新应用设置
+                ApplySettings();
+                UpdateStatus("设置已更新");
+                
+                // 如果路径改变了，重新加载
+                var newPath = _settingsService.Settings.LastSelectedPath;
+                if (!string.IsNullOrEmpty(newPath) && newPath != _currentPath && Directory.Exists(newPath))
+                {
+                    _currentPath = newPath;
+                    PathTextBox.Text = _currentPath;
+                    LoadFolders();
+                    _folderWatcher.StartWatching(_currentPath);
+                    UpdateStatus($"已切换到新路径: {Path.GetFileName(_currentPath)}");
+                }
             }
         }
 
@@ -218,6 +286,7 @@ namespace FolderRemark
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             _remarkService.SaveRemarks();
+            _settingsService.SaveSettings();
             _folderWatcher?.Dispose();
             _saveSuccessTimer?.Stop();
         }
