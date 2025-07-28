@@ -5,6 +5,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Media;
+using System.Windows.Threading;
 using FolderRemark.Models;
 using FolderRemark.Services;
 using MessageBox = System.Windows.MessageBox;
@@ -21,6 +23,7 @@ namespace FolderRemark
         private readonly FolderWatcher _folderWatcher;
         private FolderInfo _selectedFolder;
         private string _currentPath;
+        private DispatcherTimer _saveSuccessTimer;
 
         public MainWindow()
         {
@@ -38,6 +41,16 @@ namespace FolderRemark
             
             // 窗口关闭时保存数据
             Closing += MainWindow_Closing;
+            
+            // 初始化保存成功定时器
+            _saveSuccessTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(2)
+            };
+            _saveSuccessTimer.Tick += ResetSaveButtonStyle;
+            
+            // 设置初始状态
+            UpdateStatus("就绪");
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
@@ -53,8 +66,10 @@ namespace FolderRemark
             {
                 _currentPath = dialog.SelectedPath;
                 PathTextBox.Text = _currentPath;
+                UpdateStatus($"正在加载文件夹: {Path.GetFileName(_currentPath)}");
                 LoadFolders();
                 _folderWatcher.StartWatching(_currentPath);
+                UpdateStatus($"已加载 {_folders.Count} 个文件夹");
             }
         }
 
@@ -83,6 +98,7 @@ namespace FolderRemark
             {
                 MessageBox.Show($"加载文件夹时出错: {ex.Message}", "错误", 
                     MessageBoxButton.OK, MessageBoxImage.Error);
+                UpdateStatus("加载文件夹失败");
             }
         }
 
@@ -91,18 +107,20 @@ namespace FolderRemark
             if (FolderListBox.SelectedItem is FolderInfo selectedFolder)
             {
                 _selectedFolder = selectedFolder;
-                SelectedFolderLabel.Text = $"文件夹: {selectedFolder.Name}";
+                SelectedFolderLabel.Text = $"📁 {selectedFolder.Name}";
                 FolderPathLabel.Text = selectedFolder.FullPath;
                 RemarkTextBox.Text = selectedFolder.Remark == "Default" ? "" : selectedFolder.Remark;
                 SaveButton.IsEnabled = true;
+                UpdateStatus($"已选择文件夹: {selectedFolder.Name}");
             }
             else
             {
                 _selectedFolder = null;
-                SelectedFolderLabel.Text = "请选择一个文件夹";
+                SelectedFolderLabel.Text = "💡 请选择一个文件夹";
                 FolderPathLabel.Text = "";
                 RemarkTextBox.Text = "";
                 SaveButton.IsEnabled = false;
+                UpdateStatus("请选择一个文件夹");
             }
         }
 
@@ -111,20 +129,37 @@ namespace FolderRemark
             if (_selectedFolder == null)
                 return;
 
-            var remark = string.IsNullOrWhiteSpace(RemarkTextBox.Text) ? "Default" : RemarkTextBox.Text.Trim();
-            
-            _selectedFolder.Remark = remark;
-            _remarkService.SetRemark(_selectedFolder.FullPath, remark);
-            _remarkService.SaveRemarks();
-            
-            MessageBox.Show("备注已保存！", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
+            try
+            {
+                var remark = string.IsNullOrWhiteSpace(RemarkTextBox.Text) ? "Default" : RemarkTextBox.Text.Trim();
+                
+                _selectedFolder.Remark = remark;
+                _remarkService.SetRemark(_selectedFolder.FullPath, remark);
+                _remarkService.SaveRemarks();
+                
+                // 显示保存成功的视觉反馈
+                ShowSaveSuccess();
+                UpdateStatus("备注保存成功");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"保存备注时出错: {ex.Message}", "错误", 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                UpdateStatus("保存失败");
+            }
         }
 
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(_currentPath))
             {
+                UpdateStatus("正在刷新...");
                 LoadFolders();
+                UpdateStatus($"刷新完成，共 {_folders.Count} 个文件夹");
+            }
+            else
+            {
+                UpdateStatus("请先选择一个文件夹路径");
             }
         }
 
@@ -144,6 +179,7 @@ namespace FolderRemark
                 };
                 
                 _folders.Add(folderInfo);
+                UpdateStatus($"检测到新文件夹: {folderInfo.Name}");
 
                 // 弹窗提醒用户添加备注
                 var result = MessageBox.Show(
@@ -168,6 +204,7 @@ namespace FolderRemark
                 if (folderToRemove != null)
                 {
                     _folders.Remove(folderToRemove);
+                    UpdateStatus($"文件夹已删除: {Path.GetFileName(folderPath)}");
                     
                     // 如果删除的是当前选中的文件夹，清空选择
                     if (_selectedFolder?.FullPath == folderPath)
@@ -182,6 +219,35 @@ namespace FolderRemark
         {
             _remarkService.SaveRemarks();
             _folderWatcher?.Dispose();
+            _saveSuccessTimer?.Stop();
+        }
+
+        private void ShowSaveSuccess()
+        {
+            // 停止之前的定时器
+            _saveSuccessTimer.Stop();
+            
+            // 更改按钮样式为成功状态
+            SaveButton.Style = (Style)FindResource("SaveSuccessButtonStyle");
+            SaveButton.Content = "✅ 保存成功";
+            
+            // 启动定时器，2秒后恢复原样
+            _saveSuccessTimer.Start();
+        }
+
+        private void ResetSaveButtonStyle(object sender, EventArgs e)
+        {
+            // 恢复按钮原始样式和内容
+            SaveButton.Style = (Style)FindResource("ModernButtonStyle");
+            SaveButton.Content = "💾 保存备注";
+            
+            // 停止定时器
+            _saveSuccessTimer.Stop();
+        }
+
+        private void UpdateStatus(string message)
+        {
+            StatusLabel.Text = $"{DateTime.Now:HH:mm:ss} - {message}";
         }
     }
 }
