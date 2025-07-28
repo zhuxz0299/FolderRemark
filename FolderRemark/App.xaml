@@ -15,6 +15,10 @@
         <SolidColorBrush x:Key="BorderBrush" Color="#DEE2E6"/>
         <SolidColorBrush x:Key="StatusBarBrush" Color="#495057"/>
         
+        <!-- ListBox 项目动态颜色 -->
+        <SolidColorBrush x:Key="ListBoxItemHoverBrush" Color="#F8F9FA"/>
+        <SolidColorBrush x:Key="ListBoxItemSelectedBrush" Color="#E3F2FD"/>
+        
         <!-- 默认字体大小 -->
         <sys:Double x:Key="AppFontSize" xmlns:sys="clr-namespace:System;assembly=mscorlib">13</sys:Double>
 

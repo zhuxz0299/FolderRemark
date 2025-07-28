@@ -44,6 +44,10 @@ namespace FolderRemark.Services
             app.Resources["TextBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(73, 80, 87));
             app.Resources["BorderBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(222, 226, 230));
             app.Resources["StatusBarBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(73, 80, 87));
+            
+            // ListBox 项目颜色
+            app.Resources["ListBoxItemHoverBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(248, 249, 250));
+            app.Resources["ListBoxItemSelectedBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(227, 242, 253));
         }
 
         private static void ApplyDarkTheme(System.Windows.Application app)
@@ -57,6 +61,10 @@ namespace FolderRemark.Services
             app.Resources["TextBrush"] = new SolidColorBrush(Colors.White);
             app.Resources["BorderBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(64, 64, 64));
             app.Resources["StatusBarBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(24, 24, 24));
+            
+            // ListBox 项目颜色 - 深色主题下使用更深的颜色以确保文字可见性
+            app.Resources["ListBoxItemHoverBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(64, 64, 64));
+            app.Resources["ListBoxItemSelectedBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 90, 158));
         }
 
         private static void ApplySystemTheme(System.Windows.Application app)
