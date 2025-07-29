@@ -39,7 +39,7 @@ namespace FolderRemark.Services
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"±£´æ±¸×¢Ê±³ö´í: {ex.Message}", "´íÎó", 
+                System.Windows.MessageBox.Show($"ä¿å­˜å¤‡æ³¨æ—¶å‡ºé”™: {ex.Message}", "é”™è¯¯", 
                     System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
         }

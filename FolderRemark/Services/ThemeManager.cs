@@ -12,10 +12,10 @@ namespace FolderRemark.Services
             var app = System.Windows.Application.Current;
             if (app?.Resources == null) return;
 
-            // Çå³ıÖ®Ç°µÄÖ÷Ìâ×ÊÔ´
+            // æ¸…é™¤ä¹‹å‰çš„ä¸»é¢˜èµ„æº
             app.Resources.MergedDictionaries.Clear();
 
-            // ¸ù¾İÖ÷ÌâÃû³ÆÓ¦ÓÃ²»Í¬µÄÑÕÉ«·½°¸
+            // æ ¹æ®ä¸»é¢˜åç§°åº”ç”¨ä¸åŒçš„é¢œè‰²æ–¹æ¡ˆ
             switch (themeName)
             {
                 case "Light":
@@ -45,7 +45,7 @@ namespace FolderRemark.Services
             app.Resources["BorderBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(222, 226, 230));
             app.Resources["StatusBarBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(73, 80, 87));
             
-            // ListBox ÏîÄ¿ÑÕÉ«
+            // ListBox é¡¹ç›®é¢œè‰²
             app.Resources["ListBoxItemHoverBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(248, 249, 250));
             app.Resources["ListBoxItemSelectedBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(227, 242, 253));
         }
@@ -62,14 +62,14 @@ namespace FolderRemark.Services
             app.Resources["BorderBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(64, 64, 64));
             app.Resources["StatusBarBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(24, 24, 24));
             
-            // ListBox ÏîÄ¿ÑÕÉ« - ÉîÉ«Ö÷ÌâÏÂÊ¹ÓÃ¸üÉîµÄÑÕÉ«ÒÔÈ·±£ÎÄ×Ö¿É¼ûĞÔ
+            // ListBox é¡¹ç›®é¢œè‰² - æ·±è‰²ä¸»é¢˜ä¸‹ä½¿ç”¨æ›´æ·±çš„é¢œè‰²ä»¥ç¡®ä¿æ–‡å­—å¯è§æ€§
             app.Resources["ListBoxItemHoverBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(64, 64, 64));
             app.Resources["ListBoxItemSelectedBrush"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 90, 158));
         }
 
         private static void ApplySystemTheme(System.Windows.Application app)
         {
-            // ¼ì²âÏµÍ³Ö÷Ìâ
+            // æ£€æµ‹ç³»ç»Ÿä¸»é¢˜
             if (IsSystemDarkTheme())
             {
                 ApplyDarkTheme(app);
@@ -90,7 +90,7 @@ namespace FolderRemark.Services
             }
             catch
             {
-                return false; // Ä¬ÈÏÎªÇ³É«Ö÷Ìâ
+                return false; // é»˜è®¤ä¸ºæµ…è‰²ä¸»é¢˜
             }
         }
     }

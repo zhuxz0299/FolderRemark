@@ -24,10 +24,10 @@ namespace FolderRemark.Windows
 
         private void InitializeControls()
         {
-            // ÉèÖÃ×ÖÌå´óĞ¡»¬¿é
+            // è®¾ç½®å­—ä½“å¤§å°æ»‘å—
             FontSizeSlider.Value = _settings.FontSize;
 
-            // ÉèÖÃÖ÷Ìâµ¥Ñ¡°´Å¥
+            // è®¾ç½®ä¸»é¢˜å•é€‰æŒ‰é’®
             switch (_settings.Theme)
             {
                 case "Light":
@@ -41,7 +41,7 @@ namespace FolderRemark.Windows
                     break;
             }
 
-            // ÉèÖÃÄ¬ÈÏÂ·¾¶
+            // è®¾ç½®é»˜è®¤è·¯å¾„
             DefaultPathTextBox.Text = _settings.LastSelectedPath;
         }
 
@@ -58,7 +58,7 @@ namespace FolderRemark.Windows
             if (sender is System.Windows.Controls.RadioButton radio && radio.Tag is string theme)
             {
                 _settings.Theme = theme;
-                // Á¢¼´Ó¦ÓÃÖ÷ÌâÔ¤ÀÀ
+                // ç«‹å³åº”ç”¨ä¸»é¢˜é¢„è§ˆ
                 ThemeManager.ApplyTheme(theme);
             }
         }
@@ -67,7 +67,7 @@ namespace FolderRemark.Windows
         {
             using var dialog = new FolderBrowserDialog
             {
-                Description = "Ñ¡ÔñÄ¬ÈÏ¼à¿ØÎÄ¼ş¼Ğ",
+                Description = "é€‰æ‹©é»˜è®¤ç›‘æ§æ–‡ä»¶å¤¹",
                 UseDescriptionForTitle = true,
                 ShowNewFolderButton = true,
                 SelectedPath = _settings.LastSelectedPath
@@ -84,10 +84,10 @@ namespace FolderRemark.Windows
         {
             try
             {
-                // ±£´æÂ·¾¶ÉèÖÃ
+                // ä¿å­˜è·¯å¾„è®¾ç½®
                 _settings.LastSelectedPath = DefaultPathTextBox.Text;
                 
-                // ±£´æËùÓĞÉèÖÃ
+                // ä¿å­˜æ‰€æœ‰è®¾ç½®
                 _settingsService.SaveSettings();
                 
                 DialogResult = true;
@@ -95,7 +95,7 @@ namespace FolderRemark.Windows
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"±£´æÉèÖÃÊ±³ö´í: {ex.Message}", "´íÎó",
+                System.Windows.MessageBox.Show($"ä¿å­˜è®¾ç½®æ—¶å‡ºé”™: {ex.Message}", "é”™è¯¯",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -109,22 +109,22 @@ namespace FolderRemark.Windows
         private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
             var result = System.Windows.MessageBox.Show(
-                "È·¶¨ÒªÖØÖÃËùÓĞÉèÖÃÎªÄ¬ÈÏÖµÂğ£¿", 
-                "È·ÈÏÖØÖÃ", 
+                "ç¡®å®šè¦é‡ç½®æ‰€æœ‰è®¾ç½®ä¸ºé»˜è®¤å€¼å—ï¼Ÿ", 
+                "ç¡®è®¤é‡ç½®", 
                 MessageBoxButton.YesNo, 
                 MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
-                // ÖØÖÃÎªÄ¬ÈÏÖµ
+                // é‡ç½®ä¸ºé»˜è®¤å€¼
                 _settings.FontSize = 13;
                 _settings.Theme = "Light";
                 _settings.LastSelectedPath = string.Empty;
                 
-                // ¸üĞÂ½çÃæ
+                // æ›´æ–°ç•Œé¢
                 InitializeControls();
                 
-                // Ó¦ÓÃÄ¬ÈÏÖ÷Ìâ
+                // åº”ç”¨é»˜è®¤ä¸»é¢˜
                 ThemeManager.ApplyTheme("Light");
             }
         }
