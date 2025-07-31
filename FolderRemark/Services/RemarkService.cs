@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using FolderRemark.Models;
 
@@ -13,10 +14,15 @@ namespace FolderRemark.Services
 
         public RemarkService()
         {
-            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            var appFolder = Path.Combine(appDataPath, "FolderRemark");
-            Directory.CreateDirectory(appFolder);
-            _dataFilePath = Path.Combine(appFolder, "remarks.json");
+            // 获取可执行文件目录
+            var exeDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) 
+                              ?? AppDomain.CurrentDomain.BaseDirectory;
+            
+            // 在可执行文件目录下创建Data文件夹用于存放数据文件
+            var dataFolder = Path.Combine(exeDirectory, "Data");
+            Directory.CreateDirectory(dataFolder);
+            
+            _dataFilePath = Path.Combine(dataFolder, "remarks.json");
             LoadRemarks();
         }
 
