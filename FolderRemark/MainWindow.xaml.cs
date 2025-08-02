@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using FolderRemark.Models;
 using FolderRemark.Services;
 using FolderRemark.Windows;
 using MessageBox = System.Windows.MessageBox;
+using WinApplication = System.Windows.Application;
 
 namespace FolderRemark
 {
@@ -26,6 +30,7 @@ namespace FolderRemark
         private FolderInfo _selectedFolder;
         private string _currentPath;
         private DispatcherTimer _saveSuccessTimer;
+        private NotifyIcon _notifyIcon;
 
         public MainWindow()
         {
@@ -36,6 +41,9 @@ namespace FolderRemark
             ApplySettings();
             
             InitializeComponent();
+            
+            // 设置窗口图标
+            SetWindowIcon();
             
             _folders = new ObservableCollection<FolderInfo>();
             _remarkService = new RemarkService();
@@ -57,11 +65,82 @@ namespace FolderRemark
             };
             _saveSuccessTimer.Tick += ResetSaveButtonStyle;
             
+            // 初始化系统托盘
+            InitializeNotifyIcon();
+            
             // 设置初始状态
             UpdateStatus("就绪");
             
             // 如果有保存的路径，自动加载
             LoadLastSelectedPath();
+        }
+
+        private void SetWindowIcon()
+        {
+            var iconSource = IconHelper.CreateWindowIcon();
+            if (iconSource != null)
+            {
+                this.Icon = iconSource;
+            }
+        }
+
+        private void InitializeNotifyIcon()
+        {
+            _notifyIcon = new NotifyIcon();
+            
+            // 设置托盘图标 - 使用IconHelper创建
+            _notifyIcon.Icon = IconHelper.CreateTrayIcon();
+            _notifyIcon.Text = "文件夹备注工具";
+            _notifyIcon.Visible = false; // 初始时不显示，只有在最小化到托盘时才显示
+            
+            // 双击托盘图标恢复窗口
+            _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
+            
+            // 创建右键菜单
+            var contextMenu = new ContextMenuStrip();
+            
+            var showItem = new ToolStripMenuItem("显示主窗口");
+            showItem.Click += (s, e) => ShowMainWindow();
+            contextMenu.Items.Add(showItem);
+            
+            contextMenu.Items.Add(new ToolStripSeparator());
+            
+            var exitItem = new ToolStripMenuItem("退出程序");
+            exitItem.Click += (s, e) => ExitApplication();
+            contextMenu.Items.Add(exitItem);
+            
+            _notifyIcon.ContextMenuStrip = contextMenu;
+        }
+
+        private void NotifyIcon_DoubleClick(object sender, EventArgs e)
+        {
+            ShowMainWindow();
+        }
+
+        private void ShowMainWindow()
+        {
+            Show();
+            WindowState = WindowState.Normal;
+            Activate();
+            _notifyIcon.Visible = false;
+        }
+
+        private void ExitApplication()
+        {
+            _notifyIcon.Visible = false;
+            _notifyIcon?.Dispose();
+            WinApplication.Current.Shutdown();
+        }
+
+        protected override void OnStateChanged(EventArgs e)
+        {
+            if (WindowState == WindowState.Minimized && _settingsService.Settings.MinimizeToTray)
+            {
+                Hide();
+                _notifyIcon.Visible = true;
+                _notifyIcon.ShowBalloonTip(2000, "文件夹备注工具", "程序已最小化到系统托盘", ToolTipIcon.Info);
+            }
+            base.OnStateChanged(e);
         }
 
         private void ApplySettings()
@@ -73,7 +152,7 @@ namespace FolderRemark
                 ThemeManager.ApplyTheme(settings.Theme);
                 
                 // 设置字体大小
-                System.Windows.Application.Current.Resources["AppFontSize"] = settings.FontSize;
+                WinApplication.Current.Resources["AppFontSize"] = settings.FontSize;
             }
         }
 
@@ -285,10 +364,20 @@ namespace FolderRemark
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // 如果启用了托盘模式，点击关闭按钮时最小化到托盘而不是退出
+            if (_settingsService.Settings.MinimizeToTray)
+            {
+                e.Cancel = true;
+                WindowState = WindowState.Minimized;
+                return;
+            }
+            
+            // 正常关闭流程
             _remarkService.SaveRemarks();
             _settingsService.SaveSettings();
             _folderWatcher?.Dispose();
             _saveSuccessTimer?.Stop();
+            _notifyIcon?.Dispose();
         }
 
         private void ShowSaveSuccess()
@@ -314,7 +403,7 @@ namespace FolderRemark
             _saveSuccessTimer.Stop();
         }
 
-        private void UpdateStatus(string message)
+        private void UpdateStatus(String message)
         {
             StatusLabel.Text = $"{DateTime.Now:HH:mm:ss} - {message}";
         }

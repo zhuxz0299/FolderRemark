@@ -7,6 +7,7 @@ namespace FolderRemark.Models
         private double _fontSize = 13;
         private string _theme = "Light";
         private string _lastSelectedPath = string.Empty;
+        private bool _minimizeToTray = false;
 
         public double FontSize
         {
@@ -35,6 +36,16 @@ namespace FolderRemark.Models
             {
                 _lastSelectedPath = value;
                 OnPropertyChanged(nameof(LastSelectedPath));
+            }
+        }
+
+        public bool MinimizeToTray
+        {
+            get => _minimizeToTray;
+            set
+            {
+                _minimizeToTray = value;
+                OnPropertyChanged(nameof(MinimizeToTray));
             }
         }
 

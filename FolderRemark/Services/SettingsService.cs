@@ -78,5 +78,11 @@ namespace FolderRemark.Services
             _settings.LastSelectedPath = path;
             SaveSettings();
         }
+
+        public void UpdateMinimizeToTray(bool minimizeToTray)
+        {
+            _settings.MinimizeToTray = minimizeToTray;
+            SaveSettings();
+        }
     }
 }

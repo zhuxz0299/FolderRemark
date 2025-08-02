@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -19,7 +20,20 @@ namespace FolderRemark.Windows
             _settings = settingsService.Settings;
             
             DataContext = _settings;
+            
+            // 设置窗口图标
+            SetWindowIcon();
+            
             InitializeControls();
+        }
+
+        private void SetWindowIcon()
+        {
+            var iconSource = IconHelper.CreateWindowIcon();
+            if (iconSource != null)
+            {
+                this.Icon = iconSource;
+            }
         }
 
         private void InitializeControls()
@@ -43,6 +57,9 @@ namespace FolderRemark.Windows
 
             // 设置默认路径
             DefaultPathTextBox.Text = _settings.LastSelectedPath;
+
+            // 设置托盘选项
+            MinimizeToTrayCheckBox.IsChecked = _settings.MinimizeToTray;
         }
 
         private void FontSizeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -60,6 +77,22 @@ namespace FolderRemark.Windows
                 _settings.Theme = theme;
                 // 立即应用主题预览
                 ThemeManager.ApplyTheme(theme);
+            }
+        }
+
+        private void MinimizeToTrayCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (_settings != null)
+            {
+                _settings.MinimizeToTray = true;
+            }
+        }
+
+        private void MinimizeToTrayCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (_settings != null)
+            {
+                _settings.MinimizeToTray = false;
             }
         }
 
@@ -120,6 +153,7 @@ namespace FolderRemark.Windows
                 _settings.FontSize = 13;
                 _settings.Theme = "Light";
                 _settings.LastSelectedPath = string.Empty;
+                _settings.MinimizeToTray = false;
                 
                 // 更新界面
                 InitializeControls();
